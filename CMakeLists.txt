@@ -82,7 +82,7 @@ file(GLOB SOURCE
   "src/${GAME}/*.gs"
 )
 set(NAME "${GAME}")
-add_executable(${NAME} "src/${GAME}/*.cpp")
+add_executable(${NAME} "src/${GAME}/main.cpp")
 target_link_libraries(${NAME} ${LIBS})
 if(WIN32)
     set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
