@@ -72,10 +72,10 @@ int main()
     // ------------------------------------------------------------------
     float vertices[] = {
         // positions           // texture coords
-         0.5f,  0.5f, 0.0f,    1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,    1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,    0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,    0.0f, 1.0f  // top left
+         1.0f,  1.0f, 0.0f,    1.0f, 1.0f, // top right
+         1.0f, -1.0f, 0.0f,    1.0f, 0.0f, // bottom right
+        -1.0f, -1.0f, 0.0f,    0.0f, 0.0f, // bottom left
+        -1.0f,  1.0f, 0.0f,    0.0f, 1.0f  // top left
     };
     unsigned int indices[] = {
         0, 1, 3, // first triangle
@@ -185,14 +185,15 @@ int main()
         // ---------------
         glm::mat4 transform;
 
-        transform = glm::translate(transform, glm::vec3(0.0f, -0.5f, 0.0f));
+
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.75f, 0.0f));
 
         // rotation NOT at the centro of mass
-        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
+        //transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
         transform = glm::rotate(transform, arrowRot, glm::vec3(0.0f, 0.0f, 1.0f));
-        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
-
-        transform = glm::scale(transform, glm::vec3(0.1f, 0.5f, 1.0f));
+        //transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
+        //
+        transform = glm::scale(transform, glm::vec3(0.05f, 0.5f, 1.0f));
 
         // get their uniform location and set matrix (using glm::value_ptr)
         unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
@@ -209,10 +210,11 @@ int main()
           glActiveTexture(GL_TEXTURE1);
           glBindTexture(GL_TEXTURE_2D, texture2);
 
+          transform = glm::translate(transform, glm::vec3(0.0f, -0.75f, 0.0f));
+          transform = glm::translate(transform, glm::vec3(0.5f*glm::sin(-ballAngle), 0.5f*glm::cos(ballAngle), 0.0f));
           transform = glm::rotate(transform, ballAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-          transform = glm::translate(transform, glm::vec3(0.0f, -0.5f + ballPos, 0.0f));
-          transform = glm::translate(transform, glm::vec3(-0.5f*glm::sin(ballAngle), 0.5f*glm::cos(ballAngle), 0.0f));
-          transform = glm::scale(transform, glm::vec3(0.1f, 0.1f, 0.1f));
+          transform = glm::translate(transform, glm::vec3(0.0f,ballPos, 0.0f));
+          transform = glm::scale(transform, glm::vec3(0.05f, 0.05f, 0.05f));
 
           // get their uniform location and set matrix (using glm::value_ptr)
           unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
@@ -223,6 +225,7 @@ int main()
         }
 
         /* se la palla esce dallo schermo allora aggiorna lo stato a pointing*/
+        
 
         arrowRot += arrowRotInc;
         ballPos += ballPosInc;
@@ -257,8 +260,8 @@ void processInput(GLFWwindow *window)
           ballPos = 0.0f;
           ballAngle = arrowRot;
 
-          printf( "-0.5f*glm::sin(ballAngle): %f\n", -0.5f*glm::sin(ballAngle));
-          printf( "0.5f*glm::cos(ballAngle): %f\n", 0.5f*glm::cos(ballAngle));
+          printf( "-1.0f*glm::sin(ballAngle): %f\n", -1.0f*glm::sin(ballAngle));
+          printf( "1.0f*glm::cos(ballAngle): %f\n", 1.0f*glm::cos(ballAngle));
       }
 }
 
