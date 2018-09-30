@@ -13,6 +13,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void calculateBallPosition(float *x, float *y);
 
 // settings
 const unsigned int SCR_WIDTH = 1800;
@@ -220,12 +221,21 @@ int main()
           unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
           glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
+          float x;
+          float y;
+
+          calculateBallPosition(&x, &y);
+          if( (x < -1) || (x > 1) ||
+              (y < -1) || (y > 1)){
+            status = pointing;
+            printf("x: %f\n", x);
+            printf("y: %f\n", y);
+          }
           glBindVertexArray(VAO);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         }
 
         /* se la palla esce dallo schermo allora aggiorna lo stato a pointing*/
-        
 
         arrowRot += arrowRotInc;
         ballPos += ballPosInc;
@@ -260,8 +270,8 @@ void processInput(GLFWwindow *window)
           ballPos = 0.0f;
           ballAngle = arrowRot;
 
-          printf( "-1.0f*glm::sin(ballAngle): %f\n", -1.0f*glm::sin(ballAngle));
-          printf( "1.0f*glm::cos(ballAngle): %f\n", 1.0f*glm::cos(ballAngle));
+          // printf( "-1.0f*glm::sin(ballAngle): %f\n", -1.0f*glm::sin(ballAngle));
+          // printf( "1.0f*glm::cos(ballAngle): %f\n", 1.0f*glm::cos(ballAngle));
       }
 }
 
@@ -272,4 +282,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+// Calculate all
+// ---------------------------------------------------------------------------------------------
+void calculateBallPosition(float *x, float *y)
+{
+    *x = (0.5f + ballPos) * glm::sin(-ballAngle);
+    *y = -0.75f + (0.5f + ballPos) * glm::cos(ballAngle);
 }
