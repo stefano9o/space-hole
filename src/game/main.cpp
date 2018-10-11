@@ -106,34 +106,9 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
-    // load and create a texture
+		// load and create a texture
     // -------------------------
-    unsigned int texture;
-    // texture
-    // ---------
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char *data = SOIL_load_image(FileSystem::getPath("resources/textures/arrow1.png").c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    SOIL_free_image_data(data);
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), 1, "arrow");
 
     // enable transparency
     glEnable(GL_BLEND);
@@ -158,8 +133,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+				ResourceManager::GetTexture("arrow").Bind();
 
         if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
           arrowRotInc = -arrowRotInc;
