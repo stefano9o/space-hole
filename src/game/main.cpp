@@ -71,7 +71,7 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-		Shader ourShader = ResourceManager::LoadShader("5.2.transform.vs", "5.2.transform.fs", nullptr, "arrow");
+		ResourceManager::LoadShader("5.2.transform.vs", "5.2.transform.fs", nullptr, "arrow");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -116,8 +116,7 @@ int main()
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    ourShader.Use();
-    ourShader.SetInteger("tex", 0);
+    ResourceManager::GetShader("arrow").Use().SetInteger("tex", 0);
 
     // render loop
     // -----------
@@ -155,7 +154,7 @@ int main()
         transform = glm::scale(transform, glm::vec3(0.05f, 0.5f, 1.0f));
 
         // get their uniform location and set matrix (using glm::value_ptr)
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        unsigned int transformLoc = glGetUniformLocation(ResourceManager::GetShader("arrow").ID, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
         // with the uniform matrix set, draw the first container
@@ -174,7 +173,7 @@ int main()
           transform = glm::scale(transform, glm::vec3(0.05f, 0.03f, 0.05f));
 
           // get their uniform location and set matrix (using glm::value_ptr)
-          unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+          unsigned int transformLoc = glGetUniformLocation(ResourceManager::GetShader("arrow").ID, "transform");
           glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
           float x;
