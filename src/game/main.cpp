@@ -48,7 +48,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Space Hole", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -73,7 +73,7 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        // positions           // texture coords
+        // positions (x,y,z)   // texture coords
          1.0f,  1.0f, 0.0f,    1.0f, 1.0f, // top right
          1.0f, -1.0f, 0.0f,    1.0f, 0.0f, // bottom right
         -1.0f, -1.0f, 0.0f,    0.0f, 0.0f, // bottom left
@@ -194,7 +194,7 @@ int main()
           transform = glm::translate(transform, glm::vec3(0.5f*glm::sin(-ballAngle), 0.5f*glm::cos(ballAngle), 0.0f));
           transform = glm::rotate(transform, ballAngle, glm::vec3(0.0f, 0.0f, 1.0f));
           transform = glm::translate(transform, glm::vec3(0.0f,ballPos, 0.0f));
-          transform = glm::scale(transform, glm::vec3(0.05f, 0.05f, 0.05f));
+          transform = glm::scale(transform, glm::vec3(0.05f, 0.03f, 0.05f));
 
           // get their uniform location and set matrix (using glm::value_ptr)
           unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
