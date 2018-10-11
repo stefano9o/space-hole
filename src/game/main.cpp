@@ -8,17 +8,20 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <learnopengl/filesystem.h>
-#include <learnopengl/shader_s.h>
 
 #include <iostream>
+
+#include <common/ResourceManager.h>
+std::map<std::string, Shader>    ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void calculateBallPosition(float *x, float *y);
 
 // settings
-const unsigned int SCR_WIDTH = 1800;
-const unsigned int SCR_HEIGHT = 1800;
+const unsigned int SCR_WIDTH = 900;
+const unsigned int SCR_HEIGHT = 900;
 
 // Status
 enum GameStatus { pointing, shooting };
@@ -68,7 +71,7 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("5.2.transform.vs", "5.2.transform.fs");
+		Shader ourShader = ResourceManager::LoadShader("5.2.transform.vs", "5.2.transform.fs", nullptr, "arrow");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -138,8 +141,8 @@ int main()
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    ourShader.use();
-    ourShader.setInt("tex", 0);
+    ourShader.Use();
+    ourShader.SetInteger("tex", 0);
 
     // render loop
     // -----------
