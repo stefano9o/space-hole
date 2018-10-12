@@ -17,6 +17,7 @@ std::map<std::string, Texture2D> ResourceManager::Textures;
 #include <common/SpriteRenderer.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
 void calculateBallPosition(float *x, float *y);
 
@@ -54,6 +55,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
@@ -70,6 +72,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+		glfwSetCursorPosCallback(window, cursor_position_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -188,6 +191,12 @@ void processInput(GLFWwindow *window)
           ballPos = 0.0f;
           ballRot = arrowRot;
       }
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	std::cout << "xpos: " << xpos << std::endl;
+	std::cout << "ypos: " << ypos << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
