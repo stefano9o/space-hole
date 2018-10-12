@@ -43,7 +43,7 @@ float arrrowPosY = 400.0f;
 float ballPos;
 float ballPosInc = 5.0f;
 float ballRot;
-float ballRadius = 50.0f;
+float ballRadius = 25.0f;
 float ballPosX;
 float ballPosY;
 
@@ -132,6 +132,7 @@ int main()
 													glm::vec2(arrrowPosX, arrrowPosY),
 													glm::vec2(arrowWidth, arrowLength),
 													arrowRot,
+                          0.5f,
 													glm::vec3(1.0f, 1.0f, 1.0f));
 
         if (status==shooting){
@@ -140,8 +141,9 @@ int main()
 					Texture2D tex = ResourceManager::GetTexture("awesome");
 					arrow->DrawSprite(tex,
 														glm::vec2(ballPosX, ballPosY),
-														glm::vec2(ballRadius, ballRadius),
+														glm::vec2(ballRadius*2, ballRadius*2),
 														ballRot,
+                            0.5f,
 														glm::vec3(1.0f, 1.0f, 1.0f));
         }
 
