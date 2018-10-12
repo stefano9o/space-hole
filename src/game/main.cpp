@@ -203,6 +203,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // ---------------------------------------------------------------------------------------------
 void calculateBallPosition(float *x, float *y)
 {
-    *x = (arrrowPosX) + (arrowLength/2 + ballPos) * glm::sin(ballRot);
-    *y = (arrrowPosY + arrowLength/2) - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+    *x = arrrowPosX + (ballRadius)                    + (arrowLength/2 + ballPos) * glm::sin(ballRot);
+    *y = arrrowPosY - (ballRadius) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
 }
