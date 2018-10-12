@@ -135,9 +135,6 @@ int main()
 													glm::vec3(1.0f, 1.0f, 1.0f));
 
         if (status==shooting){
-					printf("ballPosX: %f\n", ballPosX);
-					printf("ballPosY: %f\n", ballPosY);
-
           calculateBallPosition(&ballPosX, &ballPosY);
 
 					Texture2D tex = ResourceManager::GetTexture("awesome");
@@ -150,7 +147,7 @@ int main()
 
 				/* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
 				if( (ballPosX < 0) || (ballPosX > SCR_WIDTH) ||
-						(ballPosY < 0) || (ballPosY > SCR_HEIGHT)){
+						(ballPosY < 0) || (ballPosY > SCR_HEIGHT) ){
 					status = pointing;
 					printf("ballPosX: %f\n", ballPosX);
 					printf("ballPosY: %f\n", ballPosY);
