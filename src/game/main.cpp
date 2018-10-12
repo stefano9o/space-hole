@@ -14,6 +14,7 @@
 #include <common/ResourceManager.h>
 std::map<std::string, Shader>    ResourceManager::Shaders;
 std::map<std::string, Texture2D> ResourceManager::Textures;
+#include <common/SpriteRenderer.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -27,14 +28,23 @@ const unsigned int SCR_HEIGHT = 900;
 enum GameStatus { pointing, shooting };
 GameStatus status = pointing;
 
-// Arrow status
+// Objects status
+
+// Arrow
 float arrowRot = 0.0f;
 float arrowRotInc = 0.02f;
+float arrowLength = 200.0f;
+float arrowWidth = 50.0f;
+float arrrowPosX = 400.0f;
+float arrrowPosY = 400.0f;
 
 // Ball status
 float ballPos;
-float ballPosInc=0.01f;
-float ballAngle;
+float ballPosInc = 5.0f;
+float ballRot;
+float ballRadius = 50.0f;
+float ballPosX;
+float ballPosY;
 
 int main()
 {
@@ -71,52 +81,28 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-		ResourceManager::LoadShader("5.2.transform.vs", "5.2.transform.fs", nullptr, "arrow");
+		ResourceManager::LoadShader("arrow.vs", "arrow.fs", nullptr, "arrow");
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float vertices[] = {
-        // positions (x,y,z)   // texture coords
-         1.0f,  1.0f, 0.0f,    1.0f, 1.0f, // top right
-         1.0f, -1.0f, 0.0f,    1.0f, 0.0f, // bottom right
-        -1.0f, -1.0f, 0.0f,    0.0f, 0.0f, // bottom left
-        -1.0f,  1.0f, 0.0f,    0.0f, 1.0f  // top left
-    };
-    unsigned int indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+		Shader ourShader = ResourceManager::GetShader("arrow");
 
-    glBindVertexArray(VAO);
+		// create arrow sprite
+		SpriteRenderer *arrow = new SpriteRenderer(ourShader);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+		ResourceManager::GetShader("arrow").Use().SetInteger("tex", 0);
+		glm::mat4 projection = glm::ortho(0.0f,
+																			static_cast<GLfloat>(SCR_WIDTH),
+         															static_cast<GLfloat>(SCR_HEIGHT),
+																			0.0f, -1.0f, 1.0f);
+		ResourceManager::GetShader("arrow").Use().SetInteger("image", 0);
+		ResourceManager::GetShader("arrow").SetMatrix4("projection", projection);
 
 		// load and create a texture
     // -------------------------
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), 1, "arrow");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
 
     // enable transparency
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    // -------------------------------------------------------------------------------------------
-    ResourceManager::GetShader("arrow").Use().SetInteger("tex", 0);
 
     // render loop
     // -----------
@@ -137,60 +123,43 @@ int main()
         if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
           arrowRotInc = -arrowRotInc;
         }
-        //printf("arrowRot: %f\n", arrowRot);
 
-        // arrow
-        // ---------------
-        glm::mat4 transform;
+				Texture2D tex = ResourceManager::GetTexture("arrow");
+				arrow->DrawSprite(tex,
+													glm::vec2(arrrowPosX, arrrowPosY),
+													glm::vec2(arrowWidth, arrowLength),
+													arrowRot,
+													glm::vec3(0.0f, 1.0f, 0.0f));
 
+				Texture2D texArrow = ResourceManager::GetTexture("arrow");
+				arrow->DrawSprite(texArrow,
+													glm::vec2(arrrowPosX, arrrowPosY + arrowLength/2),
+													glm::vec2(ballRadius, ballRadius),
+													ballRot,
+													glm::vec3(0.0f, 0.0f, 0.0f));
 
-        transform = glm::translate(transform, glm::vec3(0.0f, -0.75f, 0.0f));
-
-        // rotation NOT at the centro of mass
-        //transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
-        transform = glm::rotate(transform, arrowRot, glm::vec3(0.0f, 0.0f, 1.0f));
-        //transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
-        //
-        transform = glm::scale(transform, glm::vec3(0.05f, 0.5f, 1.0f));
-
-        // get their uniform location and set matrix (using glm::value_ptr)
-        unsigned int transformLoc = glGetUniformLocation(ResourceManager::GetShader("arrow").ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-        // with the uniform matrix set, draw the first container
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         if (status==shooting){
-          //printf("shooting\n");
+					printf("ballPosX: %f\n", ballPosX);
+					printf("ballPosY: %f\n", ballPosY);
 
-          transform = glm::mat4();
+          calculateBallPosition(&ballPosX, &ballPosY);
 
-          transform = glm::translate(transform, glm::vec3(0.0f, -0.75f, 0.0f));
-          transform = glm::translate(transform, glm::vec3(0.5f*glm::sin(-ballAngle), 0.5f*glm::cos(ballAngle), 0.0f));
-          transform = glm::rotate(transform, ballAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-          transform = glm::translate(transform, glm::vec3(0.0f,ballPos, 0.0f));
-          transform = glm::scale(transform, glm::vec3(0.05f, 0.03f, 0.05f));
-
-          // get their uniform location and set matrix (using glm::value_ptr)
-          unsigned int transformLoc = glGetUniformLocation(ResourceManager::GetShader("arrow").ID, "transform");
-          glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-
-          float x;
-          float y;
-
-          calculateBallPosition(&x, &y);
-          if( (x < -1) || (x > 1) ||
-              (y < -1) || (y > 1)){
-            status = pointing;
-            printf("x: %f\n", x);
-            printf("y: %f\n", y);
-          }
-          glBindVertexArray(VAO);
-          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+					Texture2D tex = ResourceManager::GetTexture("arrow");
+					arrow->DrawSprite(tex,
+														glm::vec2(ballPosX, ballPosY),
+														glm::vec2(ballRadius, ballRadius),
+														ballRot,
+														glm::vec3(1.0f, 0.0f, 0.0f));
         }
 
-        /* se la palla esce dallo schermo allora aggiorna lo stato a pointing*/
+				/* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
+				if( (ballPosX < 0) || (ballPosX > SCR_WIDTH) ||
+						(ballPosY < 0) || (ballPosY > SCR_HEIGHT)){
+					status = pointing;
+					printf("ballPosX: %f\n", ballPosX);
+					printf("ballPosY: %f\n", ballPosY);
+				}
 
         arrowRot += arrowRotInc;
         ballPos += ballPosInc;
@@ -200,12 +169,6 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -223,10 +186,7 @@ void processInput(GLFWwindow *window)
       if (status == pointing){
           status = shooting;
           ballPos = 0.0f;
-          ballAngle = arrowRot;
-
-          // printf( "-1.0f*glm::sin(ballAngle): %f\n", -1.0f*glm::sin(ballAngle));
-          // printf( "1.0f*glm::cos(ballAngle): %f\n", 1.0f*glm::cos(ballAngle));
+          ballRot = arrowRot;
       }
 }
 
@@ -243,6 +203,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // ---------------------------------------------------------------------------------------------
 void calculateBallPosition(float *x, float *y)
 {
-    *x = (0.5f + ballPos) * glm::sin(-ballAngle);
-    *y = -0.75f + (0.5f + ballPos) * glm::cos(ballAngle);
+    *x = (arrrowPosX) + (arrowLength/2 + ballPos) * glm::sin(ballRot);
+    *y = (arrrowPosY + arrowLength/2) - (arrowLength/2 + ballPos) * glm::cos(ballRot);
 }
