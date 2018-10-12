@@ -105,7 +105,7 @@ int main()
 		// load and create a texture
     // -------------------------
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), GL_TRUE, "container");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), GL_TRUE, "awesome");
 
 		// render loop
     // -----------
@@ -140,7 +140,7 @@ int main()
 
           calculateBallPosition(&ballPosX, &ballPosY);
 
-					Texture2D tex = ResourceManager::GetTexture("container");
+					Texture2D tex = ResourceManager::GetTexture("awesome");
 					arrow->DrawSprite(tex,
 														glm::vec2(ballPosX, ballPosY),
 														glm::vec2(ballRadius, ballRadius),
