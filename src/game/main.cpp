@@ -82,16 +82,19 @@ int main()
         return -1;
     }
 
-    // build and compile our shader zprogram
+		// GL configuration
+		// enable transparency
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // build and compile our shader programs
     // ------------------------------------
 		ResourceManager::LoadShader("arrow.vs", "arrow.fs", nullptr, "arrow");
 
-		Shader ourShader = ResourceManager::GetShader("arrow");
-
 		// create arrow sprite
+		Shader ourShader = ResourceManager::GetShader("arrow");
 		SpriteRenderer *arrow = new SpriteRenderer(ourShader);
 
-		ResourceManager::GetShader("arrow").Use().SetInteger("tex", 0);
 		glm::mat4 projection = glm::ortho(0.0f,
 																			static_cast<GLfloat>(SCR_WIDTH),
          															static_cast<GLfloat>(SCR_HEIGHT),
@@ -102,12 +105,9 @@ int main()
 		// load and create a texture
     // -------------------------
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), GL_TRUE, "container");
 
-    // enable transparency
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // render loop
+		// render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
@@ -121,26 +121,18 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // bind textures on corresponding texture units
-				ResourceManager::GetTexture("arrow").Bind();
+				Texture2D tex = ResourceManager::GetTexture("arrow");
+				tex.Bind();
 
         if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
           arrowRotInc = -arrowRotInc;
         }
 
-				Texture2D tex = ResourceManager::GetTexture("arrow");
 				arrow->DrawSprite(tex,
 													glm::vec2(arrrowPosX, arrrowPosY),
 													glm::vec2(arrowWidth, arrowLength),
 													arrowRot,
-													glm::vec3(0.0f, 1.0f, 0.0f));
-
-				Texture2D texArrow = ResourceManager::GetTexture("arrow");
-				arrow->DrawSprite(texArrow,
-													glm::vec2(arrrowPosX, arrrowPosY + arrowLength/2),
-													glm::vec2(ballRadius, ballRadius),
-													ballRot,
-													glm::vec3(0.0f, 0.0f, 0.0f));
-
+													glm::vec3(1.0f, 1.0f, 1.0f));
 
         if (status==shooting){
 					printf("ballPosX: %f\n", ballPosX);
@@ -148,12 +140,12 @@ int main()
 
           calculateBallPosition(&ballPosX, &ballPosY);
 
-					Texture2D tex = ResourceManager::GetTexture("arrow");
+					Texture2D tex = ResourceManager::GetTexture("container");
 					arrow->DrawSprite(tex,
 														glm::vec2(ballPosX, ballPosY),
 														glm::vec2(ballRadius, ballRadius),
 														ballRot,
-														glm::vec3(1.0f, 0.0f, 0.0f));
+														glm::vec3(1.0f, 1.0f, 1.0f));
         }
 
 				/* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
