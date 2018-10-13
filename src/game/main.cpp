@@ -144,8 +144,8 @@ int main()
 													glm::vec2(arrrowPosX, arrrowPosY),
 													glm::vec2(arrowWidth, arrowLength),
 													arrowRot,
-                          0.5f,
-													glm::vec3(1.0f, 1.0f, 1.0f));
+													glm::vec3(1.0f, 1.0f, 1.0f),
+                          0.5f);
 
         if (status==shooting){
           calculateBallPosition(&ballPosX, &ballPosY);
@@ -155,7 +155,6 @@ int main()
 														glm::vec2(ballPosX, ballPosY),
 														glm::vec2(ballRadius*2, ballRadius*2),
 														ballRot,
-                            0.5f,
 														glm::vec3(1.0f, 1.0f, 1.0f));
         }
 

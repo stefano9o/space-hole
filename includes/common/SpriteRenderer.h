@@ -22,7 +22,7 @@ public:
 		glDeleteVertexArrays(1, &this->quadVAO);
 	}
 	// Renders a defined quad textured with given sprite
-	void DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, GLfloat yRot, glm::vec3 color)
+	void DrawSprite(Texture2D &texture, glm::vec2 position, glm::vec2 size, GLfloat rotate, glm::vec3 color, GLfloat yRot = 0.5f)
 	{
 		// Prepare transformations
 		this->shader.Use();
