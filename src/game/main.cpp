@@ -38,7 +38,7 @@ GameStatus status = pointing;
 float arrowRot = 0.0f;
 float arrowRotInc = 0.02f;
 float arrowLength = 200.0f;
-float arrowWidth = 50.0f;
+float arrowWidth = 80.0f;
 float arrrowPosX = 400.0f;
 float arrrowPosY = 400.0f;
 
@@ -46,7 +46,7 @@ float arrrowPosY = 400.0f;
 float ballPos;
 float ballPosInc = 5.0f;
 float ballRot;
-float ballRadius = 25.0f;
+float ballRadius = 40.0f;
 float ballPosX;
 float ballPosY;
 
@@ -116,8 +116,8 @@ int main()
 
 		// load and create a texture
     // -------------------------
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/awesomeface.png").c_str(), GL_TRUE, "awesome");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/banana.png").c_str(), GL_TRUE, "arrow");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/apple.png").c_str(), GL_TRUE, "awesome");
 
 		// render loop
     // -----------
