@@ -16,6 +16,9 @@ std::map<std::string, Shader>    ResourceManager::Shaders;
 std::map<std::string, Texture2D> ResourceManager::Textures;
 #include <common/SpriteRenderer.h>
 
+#include <irrklang/irrKlang.h>
+using namespace irrklang;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
@@ -81,6 +84,15 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+
+    // start the sound engine with default parameters
+    ISoundEngine* engine = createIrrKlangDevice();
+
+    if (!engine){
+       return 0; // error starting up the engine
+    }
+
+    engine->play2D(FileSystem::getPath("resources/sounds/puzzle-bobble.mp3").c_str(), true);
 
 		// GL configuration
 		// enable transparency
@@ -164,6 +176,7 @@ int main()
         glfwPollEvents();
     }
 
+    engine->drop();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
