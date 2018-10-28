@@ -37,16 +37,16 @@ GameStatus status = pointing;
 // Arrow
 float arrowRot = 0.0f;
 float arrowRotInc = 0.02f;
-float arrowLength = 200.0f;
-float arrowWidth = 80.0f;
-float arrrowPosX = 400.0f;
-float arrrowPosY = 400.0f;
+float arrowLength = (SCR_HEIGHT * 1/4);
+float arrowWidth = (SCR_WIDTH * 1/10);
+float arrowPosX = (SCR_WIDTH * 1/2) - arrowWidth/2;
+float arrowPosY = (SCR_HEIGHT * 5/6) - arrowLength/2;
 
 // Ball status
 float ballPos;
 float ballPosInc = 5.0f;
 float ballRot;
-float ballRadius = 40.0f;
+float ballDiameter = (SCR_WIDTH * 1/20);
 float ballPosX;
 float ballPosY;
 
@@ -149,7 +149,7 @@ int main()
         }
 
 				arrow->DrawSprite(tex,
-													glm::vec2(arrrowPosX, arrrowPosY),
+													glm::vec2(arrowPosX, arrowPosY),
 													glm::vec2(arrowWidth, arrowLength),
 													arrowRot,
 													glm::vec3(1.0f, 1.0f, 1.0f),
@@ -161,7 +161,7 @@ int main()
 					tex = ResourceManager::GetTexture("awesome");
 					arrow->DrawSprite(tex,
 														glm::vec2(ballPosX, ballPosY),
-														glm::vec2(ballRadius*2, ballRadius*2),
+														glm::vec2(ballDiameter*2, ballDiameter*2),
 														ballRot,
 														glm::vec3(1.0f, 1.0f, 1.0f));
         }
@@ -223,6 +223,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // ---------------------------------------------------------------------------------------------
 void calculateBallPosition(float *x, float *y)
 {
-    *x = arrrowPosX - (ballRadius) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
-    *y = arrrowPosY - (ballRadius) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+    *x = arrowPosX - (ballDiameter) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
+    *y = arrowPosY - (ballDiameter) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
 }
