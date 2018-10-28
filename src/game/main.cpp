@@ -118,6 +118,7 @@ int main()
     // -------------------------
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/banana.png").c_str(), GL_TRUE, "arrow");
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/apple.png").c_str(), GL_TRUE, "awesome");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str(), GL_FALSE, "space");
 
 		// render loop
     // -----------
@@ -132,8 +133,15 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // draw background
+        Texture2D tex = ResourceManager::GetTexture("space");
+        arrow->DrawSprite(tex,
+                          glm::vec2(0.0f,0.0f),
+                          glm::vec2(SCR_WIDTH, SCR_HEIGHT),
+                          0.0f,
+                          glm::vec3(1.0f, 1.0f, 1.0f));
         // bind textures on corresponding texture units
-				Texture2D tex = ResourceManager::GetTexture("arrow");
+				tex = ResourceManager::GetTexture("arrow");
 				tex.Bind();
 
         if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
@@ -150,7 +158,7 @@ int main()
         if (status==shooting){
           calculateBallPosition(&ballPosX, &ballPosY);
 
-					Texture2D tex = ResourceManager::GetTexture("awesome");
+					tex = ResourceManager::GetTexture("awesome");
 					arrow->DrawSprite(tex,
 														glm::vec2(ballPosX, ballPosY),
 														glm::vec2(ballRadius*2, ballRadius*2),
