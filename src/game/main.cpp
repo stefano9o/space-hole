@@ -50,6 +50,11 @@ float ballDiameter = (SCR_WIDTH * 1/20);
 float ballPosX;
 float ballPosY;
 
+// Hole status
+float holeSize = (SCR_WIDTH * 1/3);
+float holePosX = (SCR_WIDTH * 1/2) - holeSize/2;
+float holePosY = (SCR_HEIGHT * 1/6) - holeSize/2;
+
 int main()
 {
     // glfw: initialize and configure
@@ -119,6 +124,7 @@ int main()
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/banana.png").c_str(), GL_TRUE, "arrow");
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/apple.png").c_str(), GL_TRUE, "awesome");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str(), GL_FALSE, "space");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space-hole.png").c_str(), GL_TRUE, "hole");
 
 		// render loop
     // -----------
@@ -140,6 +146,16 @@ int main()
                           glm::vec2(SCR_WIDTH, SCR_HEIGHT),
                           0.0f,
                           glm::vec3(1.0f, 1.0f, 1.0f));
+
+        // draw Hole
+        // TODO scale hole for increasing diffulties
+        tex = ResourceManager::GetTexture("hole");
+        arrow->DrawSprite(tex,
+                          glm::vec2(holePosX, holePosY),
+                          glm::vec2(holeSize,holeSize),
+                          0.0f,
+                          glm::vec3(1.0f, 1.0f, 1.0f));
+
         // bind textures on corresponding texture units
 				tex = ResourceManager::GetTexture("arrow");
 				tex.Bind();
