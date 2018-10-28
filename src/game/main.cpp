@@ -186,8 +186,8 @@ int main()
 				if( (ballPosX < 0) || (ballPosX > SCR_WIDTH) ||
 						(ballPosY < 0) || (ballPosY > SCR_HEIGHT) ){
 					status = pointing;
-					printf("ballPosX: %f\n", ballPosX);
-					printf("ballPosY: %f\n", ballPosY);
+					// printf("ballPosX: %f\n", ballPosX);
+					// printf("ballPosY: %f\n", ballPosY);
 				}
 
         arrowRot += arrowRotInc;
