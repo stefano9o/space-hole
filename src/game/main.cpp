@@ -130,8 +130,8 @@ int main()
 
 		// load and create a texture
     // -------------------------
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/banana.png").c_str(), GL_TRUE, "arrow");
-		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/apple.png").c_str(), GL_TRUE, "awesome");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
+		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/burntball.png").c_str(), GL_TRUE, "ball");
     //menu
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_start.jpg").c_str(), GL_TRUE, "menu_start");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_help.jpg").c_str(), GL_TRUE, "menu_help");
