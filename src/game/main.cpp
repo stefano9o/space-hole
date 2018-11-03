@@ -24,14 +24,15 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void processInput(GLFWwindow* window);
 void calculateBallPosition(float *x, float *y);
+void renderMenu(SpriteRenderer *sprite);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // Status
-enum GameStatus { pointing, shooting };
-GameStatus status = pointing;
+enum GameStatus {menu, pointing, shooting };
+GameStatus status = menu;
 
 // Objects status
 
@@ -55,6 +56,9 @@ float ballPosY;
 float holeSize = (SCR_WIDTH * 1/3);
 float holePosX = (SCR_WIDTH * 1/2) - holeSize/2;
 float holePosY = (SCR_HEIGHT * 1/6) - holeSize/2;
+// Menu Status
+std::string menuStatus = "menu_start";
+
 // Input status
 GLboolean Keys[1024];
 GLboolean KeysProcessed[1024];
@@ -128,6 +132,11 @@ int main()
     // -------------------------
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/banana.png").c_str(), GL_TRUE, "arrow");
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/apple.png").c_str(), GL_TRUE, "awesome");
+    //menu
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_start.jpg").c_str(), GL_TRUE, "menu_start");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_help.jpg").c_str(), GL_TRUE, "menu_help");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_exit.jpg").c_str(), GL_TRUE, "menu_exit");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_help_instructions.jpg").c_str(), GL_TRUE, "menu_help_instructions");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str(), GL_FALSE, "space");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space-hole.png").c_str(), GL_TRUE, "hole");
 
@@ -144,13 +153,6 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // draw background
-        Texture2D tex = ResourceManager::GetTexture("space");
-        arrow->DrawSprite(tex,
-                          glm::vec2(0.0f,0.0f),
-                          glm::vec2(SCR_WIDTH, SCR_HEIGHT),
-                          0.0f,
-                          glm::vec3(1.0f, 1.0f, 1.0f));
 
         // draw Hole
         // TODO scale hole for increasing diffulties
@@ -168,6 +170,17 @@ int main()
         if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
           arrowRotInc = -arrowRotInc;
         }
+        if (status == menu){
+          //draw menu
+          renderMenu(arrow);
+        } else {
+          // draw background
+          Texture2D tex = ResourceManager::GetTexture("space");
+          arrow->DrawSprite(tex,
+                            glm::vec2(0.0f,0.0f),
+                            glm::vec2(SCR_WIDTH, SCR_HEIGHT),
+                            0.0f,
+                            glm::vec3(1.0f, 1.0f, 1.0f));
 
 				arrow->DrawSprite(tex,
 													glm::vec2(arrowPosX, arrowPosY),
@@ -254,6 +267,37 @@ void calculateBallPosition(float *x, float *y)
 }
 void processInput(GLFWwindow* window){
   switch (status) {
+    case menu:{
+        if (Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]){
+          if (menuStatus == "menu_start"){
+            menuStatus = "menu_exit";
+          } else if (menuStatus == "menu_help"){
+            menuStatus = "menu_start";
+          } else if (menuStatus == "menu_exit"){
+            menuStatus = "menu_help";
+          }
+          KeysProcessed[GLFW_KEY_UP] = GL_TRUE;
+        } else if (Keys[GLFW_KEY_DOWN] && !KeysProcessed[GLFW_KEY_DOWN]){
+          if (menuStatus == "menu_start"){
+            menuStatus = "menu_help";
+          } else if (menuStatus == "menu_help"){
+            menuStatus = "menu_exit";
+          } else if (menuStatus == "menu_exit"){
+            menuStatus = "menu_start";
+          }
+          KeysProcessed[GLFW_KEY_DOWN] = GL_TRUE;
+        } else if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]){
+          if (menuStatus == "menu_start"){
+            status = pointing;
+          } else if (menuStatus == "menu_help"){
+            menuStatus = "menu_help_instructions";
+          } else if (menuStatus == "menu_exit"){
+            glfwSetWindowShouldClose(window, GL_TRUE);
+          }
+          KeysProcessed[GLFW_KEY_ENTER] = GL_TRUE;
+        }
+      }
+      break;
     case pointing:{
       if (Keys[GLFW_KEY_SPACE] && !KeysProcessed[GLFW_KEY_SPACE]){
         status = shooting;
