@@ -21,7 +21,8 @@ using namespace irrklang;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-void processInput(GLFWwindow *window);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void processInput(GLFWwindow* window);
 void calculateBallPosition(float *x, float *y);
 
 // settings
@@ -54,6 +55,9 @@ float ballPosY;
 float holeSize = (SCR_WIDTH * 1/3);
 float holePosX = (SCR_WIDTH * 1/2) - holeSize/2;
 float holePosY = (SCR_HEIGHT * 1/6) - holeSize/2;
+// Input status
+GLboolean Keys[1024];
+GLboolean KeysProcessed[1024];
 
 int main()
 {
@@ -81,6 +85,7 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 		glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -208,16 +213,21 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-      if (status == pointing){
-          status = shooting;
-          ballPos = 0.0f;
-          ballRot = arrowRot;
-      }
+  // When a user presses the escape key, we set the WindowShouldClose property to true, closing the application
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (key >= 0 && key < 1024)
+	{
+		if (action == GLFW_PRESS)
+			Keys[key] = GL_TRUE;
+		else if (action == GLFW_RELEASE)
+		{
+			Keys[key] = GL_FALSE;
+			KeysProcessed[key] = GL_FALSE;
+		}
+	}
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -241,4 +251,19 @@ void calculateBallPosition(float *x, float *y)
 {
     *x = arrowPosX - (ballDiameter) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
     *y = arrowPosY - (ballDiameter) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+}
+void processInput(GLFWwindow* window){
+  switch (status) {
+    case pointing:{
+      if (Keys[GLFW_KEY_SPACE] && !KeysProcessed[GLFW_KEY_SPACE]){
+        status = shooting;
+        ballPos = 0.0f;
+        ballRot = arrowRot;
+      }
+      break;
+    }
+    case shooting:{
+      break;
+    }
+  }
 }
