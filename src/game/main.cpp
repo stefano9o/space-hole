@@ -115,7 +115,7 @@ int main()
        return 0; // error starting up the engine
     }
 
-    engine->play2D(FileSystem::getPath("resources/sounds/puzzle-bobble.mp3").c_str(), true);
+    engine->play2D(FileSystem::getPath("resources/sounds/breakout.mp3").c_str(), true);
 
 		// GL configuration
 		// enable transparency
