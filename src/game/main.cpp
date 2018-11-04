@@ -155,23 +155,6 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-
-        // draw Hole
-        // TODO scale hole for increasing diffulties
-        tex = ResourceManager::GetTexture("hole");
-        arrow->DrawSprite(tex,
-                          glm::vec2(holePosX, holePosY),
-                          glm::vec2(holeSize,holeSize),
-                          0.0f,
-                          glm::vec3(1.0f, 1.0f, 1.0f));
-
-        // bind textures on corresponding texture units
-				tex = ResourceManager::GetTexture("arrow");
-				tex.Bind();
-
-        if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
-          arrowRotInc = -arrowRotInc;
-        }
         if (status == menu){
           //draw menu
           renderMenu(arrow);
@@ -184,28 +167,46 @@ int main()
                             0.0f,
                             glm::vec3(1.0f, 1.0f, 1.0f));
 
-				arrow->DrawSprite(tex,
-													glm::vec2(arrowPosX, arrowPosY),
-													glm::vec2(arrowWidth, arrowLength),
-													arrowRot,
-													glm::vec3(1.0f, 1.0f, 1.0f),
-                          0.5f);
+          // draw Hole
+          // TODO scale hole for increasing diffulties
+          tex = ResourceManager::GetTexture("hole");
+          arrow->DrawSprite(tex,
+                            glm::vec2(holePosX, holePosY),
+                            glm::vec2(holeDiameter,holeDiameter),
+                            0.0f,
+                            glm::vec3(1.0f, 1.0f, 1.0f));
 
-        if (status==shooting){
-          calculateBallPosition(&ballPosX, &ballPosY);
+          // bind textures on corresponding texture units
+  				tex = ResourceManager::GetTexture("arrow");
+  				tex.Bind();
 
-					tex = ResourceManager::GetTexture("awesome");
-					arrow->DrawSprite(tex,
-														glm::vec2(ballPosX, ballPosY),
-														glm::vec2(ballDiameter*2, ballDiameter*2),
-														ballRot,
-														glm::vec3(1.0f, 1.0f, 1.0f));
-        }
+          if(arrowRot > glm::half_pi<float>() || arrowRot < -glm::half_pi<float>()){
+            arrowRotInc = -arrowRotInc;
+          }
 
+  				arrow->DrawSprite(tex,
+  													glm::vec2(arrowPosX, arrowPosY),
+  													glm::vec2(arrowWidth, arrowLength),
+  													arrowRot,
+  													glm::vec3(1.0f, 1.0f, 1.0f),
+                            0.5f);
 
-        arrowRot += arrowRotInc;
-        ballPos += ballPosInc;
+          if (status==shooting){
+            calculateBallPosition(&ballPosX, &ballPosY);
+
+  					tex = ResourceManager::GetTexture("ball");
+  					arrow->DrawSprite(tex,
+  														glm::vec2(ballPosX, ballPosY),
+  														glm::vec2(ballDiameter, ballDiameter),
+  														ballRot,
+  														glm::vec3(1.0f, 1.0f, 1.0f));
+          }
+
           calculateBallCollisions();
+
+          arrowRot += arrowRotInc;
+          ballPos += ballPosInc;
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -258,8 +259,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // ---------------------------------------------------------------------------------------------
 void calculateBallPosition(float *x, float *y)
 {
-    *x = arrowPosX - (ballDiameter) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
-    *y = arrowPosY - (ballDiameter) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+    *x = arrowPosX - (ballDiameter/2) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
+    *y = arrowPosY - (ballDiameter/2) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+}
+
 // Calculate all
 // ---------------------------------------------------------------------------------------------
 void calculateBallCollisions(){
@@ -279,6 +282,16 @@ void calculateBallCollisions(){
   }
 
 }
+
+void renderMenu(SpriteRenderer *sprite){
+  Texture2D tex = ResourceManager::GetTexture(menuStatus);
+  sprite->DrawSprite(tex,
+                    glm::vec2(0.0f,0.0f),
+                    glm::vec2(SCR_WIDTH, SCR_HEIGHT),
+                    0.0f,
+                    glm::vec3(1.0f, 1.0f, 1.0f));
+}
+
 void processInput(GLFWwindow* window){
   switch (status) {
     case menu:{
