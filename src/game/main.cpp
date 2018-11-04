@@ -7,6 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <glm/glm.hpp>
+
 #include <learnopengl/filesystem.h>
 
 #include <iostream>
@@ -56,7 +58,7 @@ float ballPosY;
 // Hole status
 float holeDiameter = (SCR_WIDTH * 1/3);
 float holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
-float holePosY = (SCR_HEIGHT * 1/6) - holeDiameter/2;
+float holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
 
 // Menu Status
 std::string menuStatus = "menu_start";
@@ -266,18 +268,25 @@ void calculateBallPosition(float *x, float *y)
 // Calculate all
 // ---------------------------------------------------------------------------------------------
 void calculateBallCollisions(){
-  /* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
+  /* collision with the windows border */
   if( (ballPosX < 0) || (ballPosX  + ballDiameter > SCR_WIDTH) ||
       (ballPosY < 0) || (ballPosY  + ballDiameter > SCR_HEIGHT) ){
     status = pointing;
     // printf("ballPosX: %f\n", ballPosX);
     // printf("ballPosY: %f\n", ballPosY);
   }
-  // printf("ballPosX: %f\n", ballPosX);
-  // printf("ballPosY: %f\n", ballPosY);
-  printf("holePosX: %f\n", holePosX);
-  printf("holePosY: %f\n", holePosY);
-  if(ballPosY + ballDiameter < holePosY + holeDiameter){
+
+  /* collision with the hole */
+  float holeRadius = holeDiameter/2;
+  float holeCenterX = holePosX + holeRadius;
+  float holeCenterY = holePosY + holeRadius;
+
+  float ballRadius = ballDiameter/2;
+  float ballCenterX = ballPosX + ballRadius;
+  float ballCenterY = ballPosY + ballRadius;
+
+  // http://www.gamasutra.com/view/feature/3015/pool_hall_lessons_fast_accurate_.php
+  if((glm::pow(ballCenterX - holeCenterX,2) + glm::pow(ballCenterY - holeCenterY,2)) <= glm::pow(ballRadius - holeRadius,2)){
     status = pointing;
   }
 
