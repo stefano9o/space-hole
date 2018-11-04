@@ -24,6 +24,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void processInput(GLFWwindow* window);
 void calculateBallPosition(float *x, float *y);
+void calculateBallCollisions();
 void renderMenu(SpriteRenderer *sprite);
 
 // settings
@@ -48,14 +49,15 @@ float arrowPosY = (SCR_HEIGHT * 5/6) - arrowLength/2;
 float ballPos;
 float ballPosInc = 5.0f;
 float ballRot;
-float ballDiameter = (SCR_WIDTH * 1/20);
+float ballDiameter = (SCR_WIDTH * 1/14);
 float ballPosX;
 float ballPosY;
 
 // Hole status
-float holeSize = (SCR_WIDTH * 1/3);
-float holePosX = (SCR_WIDTH * 1/2) - holeSize/2;
-float holePosY = (SCR_HEIGHT * 1/6) - holeSize/2;
+float holeDiameter = (SCR_WIDTH * 1/3);
+float holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
+float holePosY = (SCR_HEIGHT * 1/6) - holeDiameter/2;
+
 // Menu Status
 std::string menuStatus = "menu_start";
 
@@ -200,16 +202,10 @@ int main()
 														glm::vec3(1.0f, 1.0f, 1.0f));
         }
 
-				/* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
-				if( (ballPosX < 0) || (ballPosX > SCR_WIDTH) ||
-						(ballPosY < 0) || (ballPosY > SCR_HEIGHT) ){
-					status = pointing;
-					// printf("ballPosX: %f\n", ballPosX);
-					// printf("ballPosY: %f\n", ballPosY);
-				}
 
         arrowRot += arrowRotInc;
         ballPos += ballPosInc;
+          calculateBallCollisions();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -264,6 +260,24 @@ void calculateBallPosition(float *x, float *y)
 {
     *x = arrowPosX - (ballDiameter) + (arrowWidth/2)   + (arrowLength/2 + ballPos) * glm::sin(ballRot);
     *y = arrowPosY - (ballDiameter) + (arrowLength/2)  - (arrowLength/2 + ballPos) * glm::cos(ballRot);
+// Calculate all
+// ---------------------------------------------------------------------------------------------
+void calculateBallCollisions(){
+  /* se la palla esce dallo schermo allora aggiorna lo stato a pointing */
+  if( (ballPosX < 0) || (ballPosX  + ballDiameter > SCR_WIDTH) ||
+      (ballPosY < 0) || (ballPosY  + ballDiameter > SCR_HEIGHT) ){
+    status = pointing;
+    // printf("ballPosX: %f\n", ballPosX);
+    // printf("ballPosY: %f\n", ballPosY);
+  }
+  // printf("ballPosX: %f\n", ballPosX);
+  // printf("ballPosY: %f\n", ballPosY);
+  printf("holePosX: %f\n", holePosX);
+  printf("holePosY: %f\n", holePosY);
+  if(ballPosY + ballDiameter < holePosY + holeDiameter){
+    status = pointing;
+  }
+
 }
 void processInput(GLFWwindow* window){
   switch (status) {
