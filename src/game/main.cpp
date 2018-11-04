@@ -31,39 +31,41 @@ void calculateBallPosition(float *x, float *y);
 void calculateBallCollisions();
 void renderMenu(SpriteRenderer *sprite);
 void updateLevel();
+void initStatusObjects();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // Status
-enum GameStatus {menu, pointing, shooting };
-GameStatus status = menu;
-int hoopCount = 0;
+enum GameStatus {menu, pointing, shooting, won, lost};
+GameStatus status;
+int hoopCount;
+int mistakeCount;
 ISoundEngine* engine;
 
 // Objects status
 
 // Arrow
-float arrowRot = 0.0f;
-float arrowRotInc = 0.02f;
-float arrowLength = (SCR_HEIGHT * 1/4);
-float arrowWidth = (SCR_WIDTH * 1/10);
-float arrowPosX = (SCR_WIDTH * 1/2) - arrowWidth/2;
-float arrowPosY = (SCR_HEIGHT * 5/6) - arrowLength/2;
+float arrowRot;
+float arrowRotInc;
+float arrowLength;
+float arrowWidth;
+float arrowPosX;
+float arrowPosY;
 
 // Ball status
 float ballPos;
-float ballPosInc = 5.0f;
+float ballPosInc;
 float ballRot;
-float ballDiameter = (SCR_WIDTH * 1/14);
+float ballDiameter;
 float ballPosX;
 float ballPosY;
 
 // Hole status
-float holeDiameter = (SCR_WIDTH * 1/3);
-float holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
-float holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
+float holeDiameter;
+float holePosX;
+float holePosY;
 
 // Menu Status
 std::string menuStatus = "menu_start";
@@ -122,6 +124,8 @@ int main()
 		// enable transparency
     glEnable(GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    initStatusObjects();
 
     // build and compile our shader programs
     // ------------------------------------
@@ -283,9 +287,7 @@ void calculateBallCollisions(){
   /* collision with the windows border */
   if( (ballPosX < 0) || (ballPosX  + ballDiameter > SCR_WIDTH) ||
       (ballPosY < 0) || (ballPosY  + ballDiameter > SCR_HEIGHT) ){
-    status = pointing;
-    // printf("ballPosX: %f\n", ballPosX);
-    // printf("ballPosY: %f\n", ballPosY);
+    status = lost;
   }
 
   /* collision with the hole */
@@ -356,6 +358,7 @@ void processInput(GLFWwindow* window){
           startTime = std::chrono::system_clock::now();
           menuStatus = "menu_start_1";
         } else if (menuStatus == "menu_start_1" && elapsedTime > 700){
+          menuStatus = "menu_start";
           status = pointing;
         }
       }
@@ -365,12 +368,20 @@ void processInput(GLFWwindow* window){
         status = shooting;
         ballPos = 0.0f;
         ballRot = arrowRot;
-        
+
         engine->play2D(FileSystem::getPath("resources/sounds/Shoot.mp3").c_str(), false);
       }
       break;
     }
     case shooting:{
+      break;
+    }
+    case won:{
+      initStatusObjects();
+      break;
+    }
+    case lost:{
+      initStatusObjects();
       break;
     }
   }
@@ -381,4 +392,36 @@ void updateLevel(){
   holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
   holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
   hoopCount = 0;
+
+  if(holeDiameter < ballDiameter){
+    status = won;
+  }
+}
+
+void initStatusObjects(){
+  status = menu;
+  hoopCount = 0;
+  mistakeCount = 0;
+
+  arrowRot = 0.0f;
+  arrowRotInc = 0.02f;
+  arrowLength = (SCR_HEIGHT * 1/4);
+  arrowWidth = (SCR_WIDTH * 1/10);
+  arrowPosX = (SCR_WIDTH * 1/2) - arrowWidth/2;
+  arrowPosY = (SCR_HEIGHT * 5/6) - arrowLength/2;
+
+  // Ball status
+  ballPos;
+  ballPosInc = 5.0f;
+  ballRot;
+  ballDiameter = (SCR_WIDTH * 1/14);
+  ballPosX;
+  ballPosY;
+
+  // Hole status
+  holeDiameter = (SCR_WIDTH * 1/3);
+  holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
+  holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
+
+  menuStatus = "menu_start";
 }
