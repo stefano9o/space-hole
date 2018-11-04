@@ -28,6 +28,7 @@ void processInput(GLFWwindow* window);
 void calculateBallPosition(float *x, float *y);
 void calculateBallCollisions();
 void renderMenu(SpriteRenderer *sprite);
+void updateLevel();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -36,6 +37,7 @@ const unsigned int SCR_HEIGHT = 600;
 // Status
 enum GameStatus {menu, pointing, shooting };
 GameStatus status = menu;
+int hoopCount = 0;
 
 // Objects status
 
@@ -202,9 +204,12 @@ int main()
   														glm::vec2(ballDiameter, ballDiameter),
   														ballRot,
   														glm::vec3(1.0f, 1.0f, 1.0f));
+            calculateBallCollisions();
           }
 
-          calculateBallCollisions();
+          if(hoopCount == 2){
+            updateLevel();
+          }
 
           arrowRot += arrowRotInc;
           ballPos += ballPosInc;
@@ -287,6 +292,7 @@ void calculateBallCollisions(){
 
   // http://www.gamasutra.com/view/feature/3015/pool_hall_lessons_fast_accurate_.php
   if((glm::pow(ballCenterX - holeCenterX,2) + glm::pow(ballCenterY - holeCenterY,2)) <= glm::pow(ballRadius - holeRadius,2)){
+    hoopCount++;
     status = pointing;
   }
 
@@ -346,4 +352,11 @@ void processInput(GLFWwindow* window){
       break;
     }
   }
+}
+
+void updateLevel(){
+  holeDiameter = holeDiameter*2/3;
+  holePosX = (SCR_WIDTH * 1/2) - holeDiameter/2;
+  holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
+  hoopCount = 0;
 }
