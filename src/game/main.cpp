@@ -40,6 +40,7 @@ const unsigned int SCR_HEIGHT = 600;
 enum GameStatus {menu, pointing, shooting };
 GameStatus status = menu;
 int hoopCount = 0;
+ISoundEngine* engine;
 
 // Objects status
 
@@ -109,7 +110,7 @@ int main()
     }
 
     // start the sound engine with default parameters
-    ISoundEngine* engine = createIrrKlangDevice();
+    engine = createIrrKlangDevice();
 
     if (!engine){
        return 0; // error starting up the engine
@@ -138,7 +139,7 @@ int main()
 		ResourceManager::GetShader("arrow").SetMatrix4("projection", projection);
 
 		// load and create a texture
-    // -------------------------
+    // objects
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/arrow1.png").c_str(), GL_TRUE, "arrow");
 		ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/burntball.png").c_str(), GL_TRUE, "ball");
     //menu
@@ -299,8 +300,10 @@ void calculateBallCollisions(){
   // http://www.gamasutra.com/view/feature/3015/pool_hall_lessons_fast_accurate_.php
   if((glm::pow(ballCenterX - holeCenterX,2) + glm::pow(ballCenterY - holeCenterY,2)) <= glm::pow(ballRadius - holeRadius,2)){
     hoopCount++;
+    engine->play2D(FileSystem::getPath("resources/sounds/collect.mp3").c_str(), false);
     status = pointing;
   }
+
 
 }
 
@@ -362,6 +365,8 @@ void processInput(GLFWwindow* window){
         status = shooting;
         ballPos = 0.0f;
         ballRot = arrowRot;
+        
+        engine->play2D(FileSystem::getPath("resources/sounds/Shoot.mp3").c_str(), false);
       }
       break;
     }
