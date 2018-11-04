@@ -12,6 +12,8 @@
 #include <learnopengl/filesystem.h>
 
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 #include <common/ResourceManager.h>
 std::map<std::string, Shader>    ResourceManager::Shaders;
@@ -64,6 +66,7 @@ float holePosY = (SCR_HEIGHT * 1/5) - holeDiameter/2;
 
 // Menu Status
 std::string menuStatus = "menu_start";
+std::chrono::time_point<std::chrono::system_clock> startTime;
 
 // Input status
 GLboolean Keys[1024];
@@ -143,6 +146,9 @@ int main()
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_help.jpg").c_str(), GL_TRUE, "menu_help");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_exit.jpg").c_str(), GL_TRUE, "menu_exit");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_help_instructions.jpg").c_str(), GL_TRUE, "menu_help_instructions");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_start_3.jpg").c_str(), GL_TRUE, "menu_start_3");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_start_2.jpg").c_str(), GL_TRUE, "menu_start_2");
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/menu_start_1.jpg").c_str(), GL_TRUE, "menu_start_1");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str(), GL_FALSE, "space");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space-hole.png").c_str(), GL_TRUE, "hole");
 
@@ -310,6 +316,8 @@ void renderMenu(SpriteRenderer *sprite){
 void processInput(GLFWwindow* window){
   switch (status) {
     case menu:{
+        std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+        int elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds> (now-startTime).count();
         if (Keys[GLFW_KEY_UP] && !KeysProcessed[GLFW_KEY_UP]){
           if (menuStatus == "menu_start"){
             menuStatus = "menu_exit";
@@ -330,13 +338,22 @@ void processInput(GLFWwindow* window){
           KeysProcessed[GLFW_KEY_DOWN] = GL_TRUE;
         } else if (Keys[GLFW_KEY_ENTER] && !KeysProcessed[GLFW_KEY_ENTER]){
           if (menuStatus == "menu_start"){
-            status = pointing;
+            menuStatus = "menu_start_3";
+            startTime = std::chrono::system_clock::now();
           } else if (menuStatus == "menu_help"){
             menuStatus = "menu_help_instructions";
           } else if (menuStatus == "menu_exit"){
             glfwSetWindowShouldClose(window, GL_TRUE);
           }
           KeysProcessed[GLFW_KEY_ENTER] = GL_TRUE;
+        } else if (menuStatus == "menu_start_3" && elapsedTime > 700){
+          startTime = std::chrono::system_clock::now();
+          menuStatus = "menu_start_2";
+        } else if (menuStatus == "menu_start_2" && elapsedTime > 700){
+          startTime = std::chrono::system_clock::now();
+          menuStatus = "menu_start_1";
+        } else if (menuStatus == "menu_start_1" && elapsedTime > 700){
+          status = pointing;
         }
       }
       break;
