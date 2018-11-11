@@ -157,6 +157,7 @@ int main()
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space.jpg").c_str(), GL_FALSE, "space");
     ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/space-hole.png").c_str(), GL_TRUE, "hole");
 
+    ResourceManager::LoadTexture(FileSystem::getPath("resources/textures/won.jpg").c_str(), GL_TRUE, "won");
 		// render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -170,12 +171,20 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        Texture2D tex;
         if (status == menu){
           //draw menu
           renderMenu(arrow);
-        } else {
+        } else if (status == won){
+          tex = ResourceManager::GetTexture("won");
+          arrow->DrawSprite(tex,
+                            glm::vec2(0.0f,0.0f),
+                            glm::vec2(SCR_WIDTH, SCR_HEIGHT),
+                            0.0f,
+                            glm::vec3(1.0f, 1.0f, 1.0f));
+        } else{
           // draw background
-          Texture2D tex = ResourceManager::GetTexture("space");
+          tex = ResourceManager::GetTexture("space");
           arrow->DrawSprite(tex,
                             glm::vec2(0.0f,0.0f),
                             glm::vec2(SCR_WIDTH, SCR_HEIGHT),
@@ -374,10 +383,6 @@ void processInput(GLFWwindow* window){
       break;
     }
     case shooting:{
-      break;
-    }
-    case won:{
-      initStatusObjects();
       break;
     }
     case lost:{
